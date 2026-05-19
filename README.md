@@ -45,9 +45,9 @@ make run
 
 | URL | Descripción |
 |-----|-------------|
-| http://localhost:8080/swagger-ui.html | Swagger UI (con auth JWT) |
-| http://localhost:8080/h2-console | Consola H2 (JDBC: `jdbc:h2:mem:transferdb`) |
-| http://localhost:8080/actuator/health | Health check |
+| http://localhost:3000/swagger-ui.html | Swagger UI (con auth JWT) |
+| http://localhost:3000/h2-console | Consola H2 (JDBC: `jdbc:h2:mem:transferdb`) |
+| http://localhost:3000/actuator/health | Health check |
 
 ---
 
