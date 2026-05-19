@@ -1,0 +1,105 @@
+version: '3.8'
+
+# =====================================================
+# Stack completo: App + PostgreSQL + SonarQube
+#
+# Solo Sonar:   docker-compose up -d sonarqube sonar-db
+# Stack full:   docker-compose up -d
+# Solo la app:  docker-compose up -d app
+# =====================================================
+
+services:
+
+  # ─── Microservicio ───────────────────────────────
+  app:
+    build: .
+    container_name: transfer-service
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://postgres:5432/transferdb
+      DB_USERNAME: transfer_user
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - transfer-net
+
+  # ─── PostgreSQL ───────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: transfer-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: transferdb
+      POSTGRES_USER: transfer_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-localdev123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./src/main/resources/init-postgres.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U transfer_user -d transferdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - transfer-net
+
+  # ─── SonarQube ────────────────────────────────────
+  sonarqube:
+    image: sonarqube:10-community
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://sonar-db:5432/sonar
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: sonar
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_logs:/opt/sonarqube/logs
+      - sonar_extensions:/opt/sonarqube/extensions
+    depends_on:
+      sonar-db:
+        condition: service_healthy
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    networks:
+      - transfer-net
+
+  sonar-db:
+    image: postgres:15-alpine
+    container_name: sonar-db
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: sonar
+    volumes:
+      - sonar_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sonar"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - transfer-net
+
+networks:
+  transfer-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  sonar_data:
+  sonar_logs:
+  sonar_extensions:
+  sonar_postgres:

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transfer Service</title>
+  <link rel="stylesheet" href="Styles.css">
+</head>
+<body>
+
+  <!-- ─── LOGIN / REGISTER PAGE ─── -->
+  <div id="page-login" class="page">
+    <div class="login-wrap">
+      <div class="login-card">
+        <div class="login-brand">
+          <div class="brand-icon-lg">⇄</div>
+          <h1>Transfer Service</h1>
+          <p class="text-muted">Sistema de transferencias</p>
+        </div>
+
+        <!-- Formulario Login -->
+        <div id="view-login">
+          <form id="form-login">
+            <div class="field">
+              <label for="input-username">Usuario</label>
+              <input id="input-username" type="text" placeholder="usuario" autocomplete="username" required>
+            </div>
+            <div class="field">
+              <label for="input-password">Contraseña</label>
+              <input id="input-password" type="password" placeholder="••••••••" autocomplete="current-password" required>
+            </div>
+            <div id="login-alert" class="alert hidden"></div>
+            <button type="submit" class="btn btn-primary w-full" id="btn-login">Iniciar sesión</button>
+          </form>
+          <div class="login-hint">
+            <span class="text-muted small">¿No tienes cuenta?</span>
+            <button class="btn-link" id="btn-show-register">Regístrate</button>
+          </div>
+        </div>
+
+        <!-- Formulario Registro -->
+        <div id="view-register" class="hidden">
+          <form id="form-register">
+            <div class="field">
+              <label for="reg-owner">Nombre completo</label>
+              <input id="reg-owner" type="text" maxlength="100" placeholder="Ej: Ana García" required>
+            </div>
+            <div class="field">
+              <label for="reg-username">Usuario de acceso</label>
+              <input id="reg-username" type="text" minlength="3" maxlength="50" placeholder="Ej: ana.garcia" required>
+            </div>
+            <div class="field">
+              <label for="reg-password">Contraseña</label>
+              <input id="reg-password" type="password" minlength="4" placeholder="Mínimo 4 caracteres" required>
+            </div>
+            <div id="register-alert" class="alert hidden"></div>
+            <button type="submit" class="btn btn-primary w-full" id="btn-register">Crear cuenta</button>
+          </form>
+          <div class="login-hint">
+            <span class="text-muted small">¿Ya tienes cuenta?</span>
+            <button class="btn-link" id="btn-show-login">Inicia sesión</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── DASHBOARD PAGE ─── -->
+  <div id="page-dashboard" class="page hidden">
+
+    <nav class="navbar">
+      <div class="navbar-left">
+        <span class="nav-brand">⇄ Transfer Service</span>
+      </div>
+      <div class="navbar-right">
+        <span class="nav-user" id="nav-username"></span>
+        <span id="nav-role-badge" class="badge badge-admin hidden">Admin</span>
+        <button id="btn-admin-toggle" class="btn btn-sm btn-outline hidden">Gestión de cuentas</button>
+        <button id="btn-logout" class="btn btn-sm btn-ghost">Salir</button>
+      </div>
+    </nav>
+
+    <main class="container">
+
+      <!-- ─── PANEL ADMIN ─── -->
+      <section id="section-admin" class="hidden">
+        <div class="admin-panel">
+          <div class="admin-grid">
+
+            <!-- Crear cuenta -->
+            <div class="card">
+              <h2 class="card-title">Nueva cuenta</h2>
+              <form id="form-create-account">
+                <div class="field">
+                  <label for="new-owner">Nombre del titular</label>
+                  <input id="new-owner" type="text" maxlength="100" placeholder="Ej: Laura Torres" required>
+                </div>
+                <div class="field">
+                  <label for="new-username">Usuario de acceso</label>
+                  <input id="new-username" type="text" minlength="3" maxlength="50" placeholder="Ej: laura.torres" required>
+                </div>
+                <div class="field">
+                  <label for="new-password">Contraseña inicial</label>
+                  <input id="new-password" type="password" minlength="4" placeholder="Mínimo 4 caracteres" required>
+                </div>
+                <div class="field">
+                  <label for="new-balance">Saldo inicial</label>
+                  <div class="input-group">
+                    <input id="new-balance" type="number" step="0.01" min="0" value="0.00" placeholder="0.00">
+                    <span class="input-addon">COP</span>
+                  </div>
+                </div>
+                <div id="create-alert" class="alert hidden"></div>
+                <button type="submit" class="btn btn-primary w-full" id="btn-create">Crear cuenta</button>
+              </form>
+            </div>
+
+            <!-- Lista de cuentas -->
+            <div class="card">
+              <h2 class="card-title">Cuentas registradas</h2>
+              <div id="admin-accounts-list"></div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- Account Selector -->
+      <section id="section-selector" class="section-selector">
+        <label class="field-label" for="select-account">Cuenta activa</label>
+        <select id="select-account" class="select-account">
+          <option value="">— Selecciona una cuenta —</option>
+        </select>
+      </section>
+
+      <!-- Account Card -->
+      <section id="section-account" class="hidden">
+        <div class="account-card">
+          <div class="account-card-header">
+            <div>
+              <div class="account-owner" id="info-owner"></div>
+              <div class="account-id small" id="info-id"></div>
+            </div>
+            <span id="info-status" class="badge"></span>
+          </div>
+          <div class="account-balance-block">
+            <div class="balance-label">Saldo disponible</div>
+            <div class="balance-amount" id="info-balance"></div>
+            <div class="balance-footer">
+              <div class="balance-currency" id="info-currency"></div>
+              <button id="btn-currency-toggle" class="btn-currency-toggle">Ver en USD</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Actions Grid -->
+      <div id="section-actions" class="grid-2 hidden">
+
+        <!-- Transfer Form -->
+        <div class="card">
+          <h2 class="card-title">Nueva transferencia</h2>
+          <form id="form-transfer">
+            <div class="field">
+              <label for="select-target">Cuenta destino</label>
+              <select id="select-target" required>
+                <option value="">— Selecciona destino —</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="input-amount">Monto</label>
+              <div class="input-group">
+                <input id="input-amount" type="number" step="0.01" min="0.01" placeholder="0.00" required>
+                <span class="input-addon">COP</span>
+              </div>
+            </div>
+            <div class="field">
+              <label for="input-desc">Descripción <span class="text-muted">(opcional)</span></label>
+              <input id="input-desc" type="text" maxlength="255" placeholder="Concepto del pago...">
+            </div>
+            <div id="transfer-alert" class="alert hidden"></div>
+            <button type="submit" class="btn btn-primary w-full" id="btn-transfer">Transferir</button>
+          </form>
+        </div>
+
+        <!-- Transfer History -->
+        <div class="card">
+          <h2 class="card-title">Historial de movimientos</h2>
+          <div id="history-loading" class="loading-row hidden">Cargando movimientos...</div>
+          <div id="history-empty" class="empty-state hidden">
+            <div class="empty-icon">📋</div>
+            <p>Sin transferencias registradas</p>
+          </div>
+          <div id="history-list"></div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
